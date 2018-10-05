@@ -17,13 +17,17 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
@@ -34,6 +38,9 @@ import javax.swing.event.MouseInputListener;
 
 class Paint extends JFrame {
 	Vector<Shape> shapes = new Vector<Shape>();
+	HashMap<Shape, Color> color = new HashMap<Shape, Color>();
+
+	Color currentColor = Color.BLACK;
 
 	class Tool extends AbstractAction implements MouseInputListener {
 		Point o;
@@ -85,6 +92,7 @@ class Paint extends JFrame {
 				shapes.add(shape = path);
 			}
 			path.lineTo(e.getX(), e.getY());
+			color.put(path, currentColor);
 			panel.repaint();
 		}
 	}, new Tool("rect") {
@@ -96,17 +104,19 @@ class Paint extends JFrame {
 			}
 			rect.setRect(min(e.getX(), o.getX()), min(e.getY(), o.getY()), abs(e.getX() - o.getX()),
 					abs(e.getY() - o.getY()));
+			color.put(rect, currentColor);
 			panel.repaint();
 		}
 	}, new Tool("eli") {
 		public void mouseDragged(MouseEvent e) {
 			Ellipse2D.Double eli = (Ellipse2D.Double) shape;
-			if(eli==null) {
+			if (eli == null) {
 				eli = new Ellipse2D.Double(o.getX(), o.getY(), 0, 0);
 				shapes.add(shape = eli);
 			}
 			eli.setFrame(min(e.getX(), o.getX()), min(e.getY(), o.getY()), abs(e.getX() - o.getX()),
 					abs(e.getY() - o.getY()));
+			color.put(eli, currentColor);
 			panel.repaint();
 		}
 	} };
@@ -122,6 +132,60 @@ class Paint extends JFrame {
 			{
 				for (AbstractAction tool : tools) {
 					add(tool);
+				} // , new Tool("color") {
+					// public void mouseClicked(MouseEvent e) {
+					// String[] items = {"item1", "item2"};
+					// JComboBox LeNomDeTaComboBox = new JComboBox(items);
+					// currentColor = Color.RED;
+					// }
+				String[] items = { "black", "red", "green", "yellow", "blue" };
+				JComboBox<String> color = new JComboBox<String>(items);
+				color.addItemListener(new ItemListener() {
+
+					@Override
+					public void itemStateChanged(ItemEvent e) {
+						String currentColor = (String) e.getItem();
+						switch (currentColor) {
+						case "red":
+							Paint.this.currentColor = Color.RED;
+							break;
+						case "green":
+							Paint.this.currentColor = Color.GREEN;
+							break;
+						case "yellow":
+							Paint.this.currentColor = Color.YELLOW;
+							;
+							break;
+						case "blue":
+							Paint.this.currentColor = Color.BLUE;
+							;
+							break;
+						default:
+							Paint.this.currentColor = Color.BLACK;
+						}
+
+					}
+				});
+				add(color);
+
+				String currentColor = (String) color.getSelectedItem();
+				switch (currentColor) {
+				case "red":
+					Paint.this.currentColor = Color.RED;
+					break;
+				case "green":
+					Paint.this.currentColor = Color.GREEN;
+					break;
+				case "yellow":
+					Paint.this.currentColor = Color.YELLOW;
+					;
+					break;
+				case "blue":
+					Paint.this.currentColor = Color.BLUE;
+					;
+					break;
+				default:
+					Paint.this.currentColor = Color.BLACK;
 				}
 			}
 		}, BorderLayout.NORTH);
@@ -136,6 +200,7 @@ class Paint extends JFrame {
 
 				g2.setColor(Color.BLACK);
 				for (Shape shape : shapes) {
+					g2.setColor(color.get(shape));
 					g2.draw(shape);
 				}
 			}
