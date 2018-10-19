@@ -30,7 +30,9 @@ import java.util.Vector;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
@@ -211,22 +213,52 @@ class Paint extends JFrame {
 				}
 			}
 		};
-		
-		JButton button = new JButton("COUCOU");
+		JPanel panel2 = new JPanel() {
+			{
+				setOpaque(false);
+			}
+		};
+		JLabel label = new JLabel("Salut1");
+		label.setPreferredSize(new Dimension(50,20));
+		JLabel label2 = new JLabel("Salut2");
+		label2.setPreferredSize(new Dimension(50,20));
+		JLabel label3 = new JLabel("Salut3");
+		label3.setPreferredSize(new Dimension(50,20));
+		JLabel label4 = new JLabel("Salut4");
+		label4.setPreferredSize(new Dimension(50,20));
+		JLabel label5 = new JLabel("Salut5");
+		label5.setPreferredSize(new Dimension(50,20));
+		JLabel label6 = new JLabel("Salut6");
+		label6.setPreferredSize(new Dimension(50,20));
+		JLabel label7 = new JLabel("Salut7");
+		label7.setPreferredSize(new Dimension(50,20));
+		JLabel label8 = new JLabel("Salut8");
+		label8.setPreferredSize(new Dimension(50,20));
+		panel2.add(label);
+		panel2.add(label2);
+		panel2.add(label3);
+		panel2.add(label4);
+		panel2.add(label5);
+		panel2.add(label6);
+		panel2.add(label7);
+		panel2.add(label8);
+		panel2.setUI(new MarkingMenu());
+		panel2.setPreferredSize(new Dimension(500,500));
+		panel.add(panel2);
 
 		MouseInputAdapter listener = new MouseInputAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(button.isVisible())
-					button.setVisible(false);
+				if(panel2.isVisible())
+					panel2.setVisible(false);
 				else 
-					button.setVisible(true);
+					panel2.setVisible(true);
 				
 			}
 		};
 		panel.addMouseListener(listener);
-		panel.add(button);
 		add(panel);
+		
 
 		pack();
 		setVisible(true);
