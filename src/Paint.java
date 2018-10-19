@@ -9,6 +9,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -24,10 +25,12 @@ import java.awt.geom.Rectangle2D;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
 /* paint *******************************************************************/
@@ -118,14 +121,17 @@ class Paint extends JFrame {
 		super(title);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setMinimumSize(new Dimension(800, 600));
-		add(new JToolBar() {
+		JToolBar toolbar = new JToolBar() {
 			{
 				for (AbstractAction tool : tools) {
 					add(tool);
 				}
 			}
-		}, BorderLayout.NORTH);
-		add(panel = new JPanel() {
+		};
+//		toolbar.setUI(new MarkingMenu());
+
+		add(toolbar,BorderLayout.PAGE_START);
+		panel = new JPanel() {
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
 				Graphics2D g2 = (Graphics2D) g;
@@ -139,12 +145,31 @@ class Paint extends JFrame {
 					g2.draw(shape);
 				}
 			}
-		});
+		};
+		
+		JButton button = new JButton("COUCOU");
+
+		MouseInputAdapter listener = new MouseInputAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(button.isVisible())
+					button.setVisible(false);
+				else 
+					button.setVisible(true);
+				
+			}
+		};
+		panel.addMouseListener(listener);
+		panel.add(button);
+		add(panel);
 
 		pack();
 		setVisible(true);
 	}
 
+	
+	
+	
 	/* main *********************************************************************/
 
 	public static void main(String argv[]) {
