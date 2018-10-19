@@ -9,7 +9,6 @@ import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -194,9 +193,9 @@ class Paint extends JFrame {
 				}
 			}
 		};
-//		toolbar.setUI(new MarkingMenu());
+		// toolbar.setUI(new MarkingMenu());
 
-		add(toolbar,BorderLayout.PAGE_START);
+		add(toolbar, BorderLayout.PAGE_START);
 		panel = new JPanel() {
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
@@ -218,6 +217,8 @@ class Paint extends JFrame {
 				setOpaque(false);
 			}
 		};
+
+		panel.setLayout(null);
 		JLabel label = new JLabel("Salut1");
 		label.setPreferredSize(new Dimension(50,20));
 		JLabel label2 = new JLabel("Salut2");
@@ -243,17 +244,21 @@ class Paint extends JFrame {
 		panel2.add(label7);
 		panel2.add(label8);
 		panel2.setUI(new MarkingMenu());
-		panel2.setPreferredSize(new Dimension(500,500));
-		panel.add(panel2);
+		panel2.setBounds(0,0,200,200);
+		panel.add(panel2);		
+		panel2.setVisible(false);
 
 		MouseInputAdapter listener = new MouseInputAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(panel2.isVisible())
+				Point p = e.getPoint();
+				if (panel2.isVisible()) {
+
 					panel2.setVisible(false);
-				else 
+				} else {
+					panel2.setLocation(p.x-panel2.getWidth()/2,p.y-panel2.getHeight()/2);
 					panel2.setVisible(true);
-				
+				}
 			}
 		};
 		panel.addMouseListener(listener);
@@ -264,9 +269,6 @@ class Paint extends JFrame {
 		setVisible(true);
 	}
 
-	
-	
-	
 	/* main *********************************************************************/
 
 	public static void main(String argv[]) {
