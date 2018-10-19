@@ -9,7 +9,6 @@ import static java.lang.Math.abs;
 import static java.lang.Math.min;
 
 import java.awt.BorderLayout;
-import java.awt.Button;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -192,9 +191,9 @@ class Paint extends JFrame {
 				}
 			}
 		};
-//		toolbar.setUI(new MarkingMenu());
+		// toolbar.setUI(new MarkingMenu());
 
-		add(toolbar,BorderLayout.PAGE_START);
+		add(toolbar, BorderLayout.PAGE_START);
 		panel = new JPanel() {
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
@@ -211,17 +210,24 @@ class Paint extends JFrame {
 				}
 			}
 		};
-		
+
 		JButton button = new JButton("COUCOU");
+		panel.setLayout(null);
+		button.setBounds(83, 100, 100, 30);
+		button.setVisible(false);
 
 		MouseInputAdapter listener = new MouseInputAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(button.isVisible())
+				Point p = e.getPoint();
+				if (button.isVisible()) {
+
 					button.setVisible(false);
-				else 
+				} else {
+					button.setLocation(p);
+					System.out.println(button.getLocation());
 					button.setVisible(true);
-				
+				}
 			}
 		};
 		panel.addMouseListener(listener);
@@ -232,9 +238,6 @@ class Paint extends JFrame {
 		setVisible(true);
 	}
 
-	
-	
-	
 	/* main *********************************************************************/
 
 	public static void main(String argv[]) {
