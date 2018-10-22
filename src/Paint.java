@@ -225,7 +225,10 @@ class Paint extends JFrame {
 		};
 
 		panel.setLayout(null);
+
+		MarkingMenu markmenu = new MarkingMenu();
 		
+		menu.setUI(markmenu);
 		
 		for(int i=0;i<tools.length;i++) {
 			final int j =i; 
@@ -237,7 +240,7 @@ class Paint extends JFrame {
 				@Override
 				public void mouseMoved(MouseEvent e) {
 					// TODO Auto-generated method stub
-					if(label.getBounds().contains(e.getPoint())) {
+					if(markmenu.getArcs()[j].contains(e.getPoint())) {
 						label.setForeground(Color.RED);
 					}else {
 						label.setForeground(Color.BLACK);
@@ -266,7 +269,6 @@ class Paint extends JFrame {
 			menu.addMouseListener(menulistener);
 		}
 		
-		menu.setUI(new MarkingMenu());
 		menu.setBounds(0,0,200,200);
 		panel.add(menu);		
 		menu.setVisible(false);
