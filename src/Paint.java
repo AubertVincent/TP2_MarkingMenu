@@ -49,9 +49,15 @@ class Paint extends JFrame {
 	class Tool extends AbstractAction implements MouseInputListener {
 		Point o;
 		Shape shape;
+		private String name;
 
 		public Tool(String name) {
 			super(name);
+			this.name=name;
+		}
+		
+		public String getName() {
+			return name;
 		}
 
 		public void actionPerformed(ActionEvent e) {
@@ -132,70 +138,70 @@ class Paint extends JFrame {
 		super(title);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setMinimumSize(new Dimension(800, 600));
-		JToolBar toolbar = new JToolBar() {
-			{
-				for (AbstractAction tool : tools) {
-					add(tool);
-				} // , new Tool("color") {
-					// public void mouseClicked(MouseEvent e) {
-					// String[] items = {"item1", "item2"};
-					// JComboBox LeNomDeTaComboBox = new JComboBox(items);
-					// currentColor = Color.RED;
-					// }
-				String[] items = { "black", "red", "green", "yellow", "blue" };
-				JComboBox<String> color = new JComboBox<String>(items);
-				color.addItemListener(new ItemListener() {
-
-					@Override
-					public void itemStateChanged(ItemEvent e) {
-						String currentColor = (String) e.getItem();
-						switch (currentColor) {
-						case "red":
-							Paint.this.currentColor = Color.RED;
-							break;
-						case "green":
-							Paint.this.currentColor = Color.GREEN;
-							break;
-						case "yellow":
-							Paint.this.currentColor = Color.YELLOW;
-							;
-							break;
-						case "blue":
-							Paint.this.currentColor = Color.BLUE;
-							;
-							break;
-						default:
-							Paint.this.currentColor = Color.BLACK;
-						}
-
-					}
-				});
-				add(color);
-
-				String currentColor = (String) color.getSelectedItem();
-				switch (currentColor) {
-				case "red":
-					Paint.this.currentColor = Color.RED;
-					break;
-				case "green":
-					Paint.this.currentColor = Color.GREEN;
-					break;
-				case "yellow":
-					Paint.this.currentColor = Color.YELLOW;
-					;
-					break;
-				case "blue":
-					Paint.this.currentColor = Color.BLUE;
-					;
-					break;
-				default:
-					Paint.this.currentColor = Color.BLACK;
-				}
-			}
-		};
+//		JToolBar toolbar = new JToolBar() {
+//			{
+//				for (AbstractAction tool : tools) {
+//					add(tool);
+//				} // , new Tool("color") {
+//					// public void mouseClicked(MouseEvent e) {
+//					// String[] items = {"item1", "item2"};
+//					// JComboBox LeNomDeTaComboBox = new JComboBox(items);
+//					// currentColor = Color.RED;
+//					// }
+//				String[] items = { "black", "red", "green", "yellow", "blue" };
+//				JComboBox<String> color = new JComboBox<String>(items);
+//				color.addItemListener(new ItemListener() {
+//
+//					@Override
+//					public void itemStateChanged(ItemEvent e) {
+//						String currentColor = (String) e.getItem();
+//						switch (currentColor) {
+//						case "red":
+//							Paint.this.currentColor = Color.RED;
+//							break;
+//						case "green":
+//							Paint.this.currentColor = Color.GREEN;
+//							break;
+//						case "yellow":
+//							Paint.this.currentColor = Color.YELLOW;
+//							;
+//							break;
+//						case "blue":
+//							Paint.this.currentColor = Color.BLUE;
+//							;
+//							break;
+//						default:
+//							Paint.this.currentColor = Color.BLACK;
+//						}
+//
+//					}
+//				});
+//				add(color);
+//
+//				String currentColor = (String) color.getSelectedItem();
+//				switch (currentColor) {
+//				case "red":
+//					Paint.this.currentColor = Color.RED;
+//					break;
+//				case "green":
+//					Paint.this.currentColor = Color.GREEN;
+//					break;
+//				case "yellow":
+//					Paint.this.currentColor = Color.YELLOW;
+//					;
+//					break;
+//				case "blue":
+//					Paint.this.currentColor = Color.BLUE;
+//					;
+//					break;
+//				default:
+//					Paint.this.currentColor = Color.BLACK;
+//				}
+//			}
+//		};
 		// toolbar.setUI(new MarkingMenu());
 
-		add(toolbar, BorderLayout.PAGE_START);
+//		add(toolbar, BorderLayout.PAGE_START);
 		panel = new JPanel() {
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
@@ -221,8 +227,9 @@ class Paint extends JFrame {
 		panel.setLayout(null);
 		
 		
-		for(int i=0;i<8;i++) {
-			JLabel label = new JLabel("Salut"+i);
+		for(int i=0;i<tools.length;i++) {
+			final int j =i; 
+			JLabel label = new JLabel(tools[j].getName());
 			label.setPreferredSize(new Dimension(50,20));
 			menu.add(label);
 			
@@ -236,8 +243,27 @@ class Paint extends JFrame {
 						label.setForeground(Color.BLACK);
 					}
 				}
+				
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					// TODO Auto-generated method stub
+//					super.mouseClicked(e);
+					label.setForeground(Color.BLACK);
+					if(label.getBounds().contains(e.getPoint())) {
+						System.out.println("using tool " + tools[j]);
+						panel.removeMouseListener(tool);
+						panel.removeMouseMotionListener(tool);
+						tool = tools[j];
+						panel.addMouseListener(tool);
+						panel.addMouseMotionListener(tool);
+					}else {
+						menu.setVisible(false);
+					}
+					
+				}
 			};
 			menu.addMouseMotionListener(menulistener);
+			menu.addMouseListener(menulistener);
 		}
 		
 		menu.setUI(new MarkingMenu());
