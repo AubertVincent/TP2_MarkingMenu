@@ -212,55 +212,58 @@ class Paint extends JFrame {
 				}
 			}
 		};
-		JPanel panel2 = new JPanel() {
+		JPanel menu = new JPanel() {
 			{
 				setOpaque(false);
 			}
 		};
 
 		panel.setLayout(null);
-		JLabel label = new JLabel("Salut1");
-		label.setPreferredSize(new Dimension(50,20));
-		JLabel label2 = new JLabel("Salut2");
-		label2.setPreferredSize(new Dimension(50,20));
-		JLabel label3 = new JLabel("Salut3");
-		label3.setPreferredSize(new Dimension(50,20));
-		JLabel label4 = new JLabel("Salut4");
-		label4.setPreferredSize(new Dimension(50,20));
-		JLabel label5 = new JLabel("Salut5");
-		label5.setPreferredSize(new Dimension(50,20));
-		JLabel label6 = new JLabel("Salut6");
-		label6.setPreferredSize(new Dimension(50,20));
-		JLabel label7 = new JLabel("Salut7");
-		label7.setPreferredSize(new Dimension(50,20));
-		JLabel label8 = new JLabel("Salut8");
-		label8.setPreferredSize(new Dimension(50,20));
-		panel2.add(label);
-		panel2.add(label2);
-		panel2.add(label3);
-		panel2.add(label4);
-		panel2.add(label5);
-		panel2.add(label6);
-		panel2.add(label7);
-		panel2.add(label8);
-		panel2.setUI(new MarkingMenu());
-		panel2.setBounds(0,0,200,200);
-		panel.add(panel2);		
-		panel2.setVisible(false);
+		
+		
+		for(int i=0;i<8;i++) {
+			JLabel label = new JLabel("Salut"+i);
+			label.setPreferredSize(new Dimension(50,20));
+			menu.add(label);
+			
+			MouseInputAdapter menulistener = new MouseInputAdapter() {
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					// TODO Auto-generated method stub
+					if(label.getBounds().contains(e.getPoint())) {
+						label.setForeground(Color.RED);
+					}else {
+						label.setForeground(Color.BLACK);
+					}
+				}
+			};
+			menu.addMouseMotionListener(menulistener);
+		}
+		
+		menu.setUI(new MarkingMenu());
+		menu.setBounds(0,0,200,200);
+		panel.add(menu);		
+		menu.setVisible(false);
 
 		MouseInputAdapter listener = new MouseInputAdapter() {
+			
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Point p = e.getPoint();
-				if (panel2.isVisible()) {
+				if (menu.isVisible()) {
 
-					panel2.setVisible(false);
+					menu.setVisible(false);
 				} else {
-					panel2.setLocation(p.x-panel2.getWidth()/2,p.y-panel2.getHeight()/2);
-					panel2.setVisible(true);
+					menu.setLocation(p.x-menu.getWidth()/2,p.y-menu.getHeight()/2);
+					menu.setVisible(true);
 				}
 			}
+			
+			
 		};
+		
+		
+
 		panel.addMouseListener(listener);
 		add(panel);
 		
