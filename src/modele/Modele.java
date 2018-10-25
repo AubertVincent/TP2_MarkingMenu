@@ -43,4 +43,9 @@ public class Modele {
 		this.color.put(shape, color2);
 		notifyViews();
 	}
+
+	public void changeCurrentColor(Color color2) {
+		this.currentColor = color2;
+		notifyViews();
+	}
 }

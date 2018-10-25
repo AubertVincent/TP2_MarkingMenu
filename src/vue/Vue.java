@@ -1,10 +1,4 @@
 package vue;
-//////////////////////////////////////////////////////////////////////////////
-// file    : Paint.java
-// content : basic painting app
-//////////////////////////////////////////////////////////////////////////////
-
-/* imports *****************************************************************/
 
 import static java.lang.Math.abs;
 import static java.lang.Math.min;
@@ -38,14 +32,14 @@ import javax.swing.event.MouseInputListener;
 
 import controleur.Controleur;
 
-/* paint *******************************************************************/
 
 public class Vue extends JFrame {
 	Vector<Shape> shapes = new Vector<Shape>();
 	HashMap<Shape, Color> color = new HashMap<Shape, Color>();
 
-	Color currentColor;
+	public Color currentColor;
 	Controleur control;
+	JPanel menu;
 	
 	class Tool extends AbstractAction implements MouseInputListener {
 		Point o;
@@ -103,7 +97,6 @@ public class Vue extends JFrame {
 				control.addShape(shape = path);
 			}
 			path.lineTo(e.getX(), e.getY());
-			System.out.println("pen : "+currentColor);
 			control.addColorToShape(path, currentColor);
 			panel.repaint();
 		}
@@ -145,12 +138,7 @@ public class Vue extends JFrame {
 			{
 				for (AbstractAction tool : tools) {
 					add(tool);
-				} // , new Tool("color") {
-					// public void mouseClicked(MouseEvent e) {
-					// String[] items = {"item1", "item2"};
-					// JComboBox LeNomDeTaComboBox = new JComboBox(items);
-					// currentColor = Color.RED;
-					// }
+				} 
 				String[] items = { "black", "red", "green", "yellow", "blue" };
 				JComboBox<String> color = new JComboBox<String>(items);
 				color.addItemListener(new ItemListener() {
@@ -160,19 +148,19 @@ public class Vue extends JFrame {
 						String currentColor = (String) e.getItem();
 						switch (currentColor) {
 						case "red":
-							Vue.this.currentColor = Color.RED;
-							System.out.println(Vue.this.currentColor);
+							Vue.this.control.changeCurrentColor(Color.RED);
 							break;
 						case "green":
-							Vue.this.currentColor = Color.GREEN;
+							Vue.this.control.changeCurrentColor(Color.GREEN);
 							break;
 						case "yellow":
-							Vue.this.currentColor = Color.YELLOW;
+							Vue.this.control.changeCurrentColor(Color.YELLOW);
 							break;
 						case "blue":
-							Vue.this.currentColor = Color.BLUE;
+							Vue.this.control.changeCurrentColor(Color.BLUE);
 							break;
 						default:
+							Vue.this.control.changeCurrentColor(Color.BLACK);
 							Vue.this.currentColor = Color.BLACK;
 						}
 
@@ -181,27 +169,8 @@ public class Vue extends JFrame {
 				add(color);
 
 				String currentColor = (String) color.getSelectedItem();
-//				switch (currentColor) {
-//				case "red":
-//					Vue.this.currentColor = Color.RED;
-//					break;
-//				case "green":
-//					Vue.this.currentColor = Color.GREEN;
-//					break;
-//				case "yellow":
-//					Vue.this.currentColor = Color.YELLOW;
-//					;
-//					break;
-//				case "blue":
-//					Vue.this.currentColor = Color.BLUE;
-//					;
-//					break;
-//				default:
-//					Vue.this.currentColor = Color.BLACK;
-//				}
 			}
 		};
-		// toolbar.setUI(new MarkingMenu());
 
 		add(toolbar, BorderLayout.PAGE_START);
 		panel = new JPanel() {
@@ -213,82 +182,39 @@ public class Vue extends JFrame {
 				g2.setColor(Color.WHITE);
 				g2.fillRect(0, 0, getWidth(), getHeight());
 
-//				g2.setColor(Color.BLACK);
 				for (Shape shape : shapes) {
 					g2.setColor(color.get(shape));
 					g2.draw(shape);
 				}
 			}
 		};
-		JPanel menu = new JPanel() {
-			{
-				setOpaque(false);
-			}
-		};
-
-		panel.setLayout(null);
-
-		MarkingMenu markmenu = new MarkingMenu();
 		
-		menu.setUI(markmenu);
-		
-		for(int i=0;i<tools.length;i++) {
-			final int j =i; 
-			JLabel label = new JLabel(tools[j].getName());
-			label.setPreferredSize(new Dimension(50,20));
-			menu.add(label);
 			
-			MouseInputAdapter menulistener = new MouseInputAdapter() {
-				@Override
-				public void mouseMoved(MouseEvent e) {
-					// TODO Auto-generated method stub
-					if(markmenu.getArcs()[j].contains(e.getPoint())) {
-						label.setForeground(Color.RED);
-						markmenu.setActivate(j);
-						menu.repaint();
-					}else {
-						label.setForeground(Color.BLACK);
-					}
-				}
-				
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					// TODO Auto-generated method stub
-//					super.mouseClicked(e);
-					label.setForeground(Color.BLACK);
-					if(markmenu.getArcs()[j].contains(e.getPoint())) {
-						System.out.println("using tool " + tools[j]);
-						panel.removeMouseListener(tool);
-						panel.removeMouseMotionListener(tool);
-						tool = tools[j];
-						panel.addMouseListener(tool);
-						panel.addMouseMotionListener(tool);
-					}else {
-						menu.setVisible(false);
-					}
-					
-				}
-			};
-			menu.addMouseMotionListener(menulistener);
-			menu.addMouseListener(menulistener);
-		}
-		
-		menu.setBounds(0,0,200,200);
-		panel.add(menu);		
-		menu.setVisible(false);
+//		menu.setVisible(false);
 
 		MouseInputAdapter listener = new MouseInputAdapter() {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Point p = e.getPoint();
-				if (menu.isVisible()) {
-
-					menu.setVisible(false);
-				} else {
-					menu.setLocation(p.x-menu.getWidth()/2,p.y-menu.getHeight()/2);
-					menu.setVisible(true);
+//				if (menu.isVisible()) {
+//
+//					menu.setVisible(false);
+//				} else {
+//					menu.setLocation(p.x-menu.getWidth()/2,p.y-menu.getHeight()/2);
+//					menu.setVisible(true);
+//					menu.repaint();
+//				}
+				if(menu==null) {
+					menu = createMenu();
+					panel.add(menu);
+					menu.setBounds(p.x-menu.getWidth()/2,p.y-menu.getHeight()/2, 200, 200);
+				}else {
+					panel.remove(menu);
+					panel.repaint();
+					menu=null;
 				}
+				
 			}
 			
 			
@@ -302,6 +228,129 @@ public class Vue extends JFrame {
 
 		pack();
 		setVisible(true);
+	}
+	
+	public JPanel createMenu() {
+		JPanel menu = new JPanel() {
+			{
+				setOpaque(false);
+			}
+		};
+		menu.setBounds(0,0,200,200);
+
+		panel.setLayout(null);
+
+		MarkingMenu markmenu = new MarkingMenu(menu.getWidth(),menu.getHeight());
+		
+		menu.setUI(markmenu);
+		
+		
+		
+		//MOUSE LISTENER OUTILS
+		for(int i=0;i<tools.length;i++) {
+			final int j =i; 
+			markmenu.addToolLabel(tools[j].getName());
+			
+			MouseInputAdapter menulistener = new MouseInputAdapter() {
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					if(markmenu.getCurrentState()==StateMenu.TOOLS && markmenu.getArcsTools().get(j).contains(e.getPoint())) {
+						markmenu.setActivate(j);
+						menu.repaint();
+					}
+				}
+				
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					if(markmenu.getCurrentState()==StateMenu.TOOLS) {
+						if(markmenu.getArcsTools().get(j).contains(e.getPoint())) {
+							System.out.println("using tool " + tools[j]);
+							panel.removeMouseListener(tool);
+							panel.removeMouseMotionListener(tool);
+							tool = tools[j];
+							panel.addMouseListener(tool);
+							panel.addMouseMotionListener(tool);
+							markmenu.setCurrentState(StateMenu.CHOICE);
+							menu.setVisible(false);
+						}else {
+							menu.setVisible(false);
+						}
+					}
+					
+					
+				}
+			};
+			menu.addMouseMotionListener(menulistener);
+			menu.addMouseListener(menulistener);
+		}
+		
+		markmenu.addChoiceLabel("Outils");
+		
+		MouseInputAdapter menulistener = new MouseInputAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				if(markmenu.getCurrentState()==StateMenu.CHOICE && markmenu.getArcsChoices().get(0).contains(e.getPoint())) {
+					markmenu.setActivate(0);
+					menu.repaint();
+				}
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(markmenu.getCurrentState()==StateMenu.CHOICE) {
+					if(markmenu.getArcsChoices().get(0).contains(e.getPoint())) {
+						markmenu.setCurrentState(StateMenu.TOOLS);
+						menu.repaint();
+//						System.out.println("using tool " + tools[j]);
+//						panel.removeMouseListener(tool);
+//						panel.removeMouseMotionListener(tool);
+//						tool = tools[j];
+//						panel.addMouseListener(tool);
+//						panel.addMouseMotionListener(tool);
+					}else {
+						menu.setVisible(false);
+					}
+				}
+				
+				
+			}
+		};
+		
+		menu.addMouseMotionListener(menulistener);
+		menu.addMouseListener(menulistener);
+		
+		
+		markmenu.addChoiceLabel("Couleurs");
+		
+		menulistener = new MouseInputAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				if(markmenu.getCurrentState()==StateMenu.CHOICE && markmenu.getArcsChoices().get(1).contains(e.getPoint())) {
+					markmenu.setActivate(1);
+					menu.repaint();
+				}
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+//				if(markmenu.getArcsTools().get(j).contains(e.getPoint())) {
+//					System.out.println("using tool " + tools[j]);
+//					panel.removeMouseListener(tool);
+//					panel.removeMouseMotionListener(tool);
+//					tool = tools[j];
+//					panel.addMouseListener(tool);
+//					panel.addMouseMotionListener(tool);
+//				}else {
+//					menu.setVisible(false);
+//				}
+				
+			}
+		};
+		
+		menu.addMouseMotionListener(menulistener);
+		menu.addMouseListener(menulistener);
+		
+		return menu;
 	}
 	
 	public void updateShapes(Vector<Shape> shapes) {

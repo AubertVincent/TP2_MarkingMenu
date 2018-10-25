@@ -32,11 +32,22 @@ public class Controleur {
 		this.color = color;
 		controlColorToShape();
 	}
+	
+	public void changeCurrentColor(Color color) {
+		this.color = color;
+		controlCurrentColor();
+	}
+
+	private void controlCurrentColor() {
+		if(this.listColor.contains(this.color)) {
+			modele.changeCurrentColor(this.color);
+		}
+		this.color=null;
+	}
 
 	private void controlColorToShape() {
 		if(this.listColor.contains(this.color)) {
 			modele.addColorToShape(this.shape,this.color);
-			System.out.println("Adding new color"+this.color);
 		}
 		this.color=null;
 		this.shape=null;
