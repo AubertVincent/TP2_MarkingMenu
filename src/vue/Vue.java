@@ -161,7 +161,6 @@ public class Vue extends JFrame {
 							break;
 						default:
 							Vue.this.control.changeCurrentColor(Color.BLACK);
-							Vue.this.currentColor = Color.BLACK;
 						}
 
 					}
@@ -284,6 +283,7 @@ public class Vue extends JFrame {
 			menu.addMouseListener(menulistener);
 		}
 		
+		//MOUSE LISTENER CHOICES
 		markmenu.addChoiceLabel("Outils");
 		
 		MouseInputAdapter menulistener = new MouseInputAdapter() {
@@ -301,12 +301,6 @@ public class Vue extends JFrame {
 					if(markmenu.getArcsChoices().get(0).contains(e.getPoint())) {
 						markmenu.setCurrentState(StateMenu.TOOLS);
 						menu.repaint();
-//						System.out.println("using tool " + tools[j]);
-//						panel.removeMouseListener(tool);
-//						panel.removeMouseMotionListener(tool);
-//						tool = tools[j];
-//						panel.addMouseListener(tool);
-//						panel.addMouseMotionListener(tool);
 					}else {
 						menu.setVisible(false);
 					}
