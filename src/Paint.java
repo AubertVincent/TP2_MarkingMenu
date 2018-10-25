@@ -242,6 +242,8 @@ class Paint extends JFrame {
 					// TODO Auto-generated method stub
 					if(markmenu.getArcs()[j].contains(e.getPoint())) {
 						label.setForeground(Color.RED);
+						markmenu.setActivate(j);
+						menu.repaint();
 					}else {
 						label.setForeground(Color.BLACK);
 					}
@@ -252,7 +254,7 @@ class Paint extends JFrame {
 					// TODO Auto-generated method stub
 //					super.mouseClicked(e);
 					label.setForeground(Color.BLACK);
-					if(label.getBounds().contains(e.getPoint())) {
+					if(markmenu.getArcs()[j].contains(e.getPoint())) {
 						System.out.println("using tool " + tools[j]);
 						panel.removeMouseListener(tool);
 						panel.removeMouseMotionListener(tool);
