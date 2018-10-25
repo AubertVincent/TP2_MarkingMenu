@@ -1,3 +1,4 @@
+package vue;
 //////////////////////////////////////////////////////////////////////////////
 // file    : Paint.java
 // content : basic painting app
@@ -27,25 +28,25 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
-import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 
+import controleur.Controleur;
+
 /* paint *******************************************************************/
 
-class Paint extends JFrame {
+public class Vue extends JFrame {
 	Vector<Shape> shapes = new Vector<Shape>();
 	HashMap<Shape, Color> color = new HashMap<Shape, Color>();
 
-	Color currentColor = Color.BLACK;
-
+	Color currentColor;
+	Controleur control;
+	
 	class Tool extends AbstractAction implements MouseInputListener {
 		Point o;
 		Shape shape;
@@ -99,10 +100,11 @@ class Paint extends JFrame {
 			if (path == null) {
 				path = new Path2D.Double();
 				path.moveTo(o.getX(), o.getY());
-				shapes.add(shape = path);
+				control.addShape(shape = path);
 			}
 			path.lineTo(e.getX(), e.getY());
-			color.put(path, currentColor);
+			System.out.println("pen : "+currentColor);
+			control.addColorToShape(path, currentColor);
 			panel.repaint();
 		}
 	}, new Tool("rect") {
@@ -110,11 +112,11 @@ class Paint extends JFrame {
 			Rectangle2D.Double rect = (Rectangle2D.Double) shape;
 			if (rect == null) {
 				rect = new Rectangle2D.Double(o.getX(), o.getY(), 0, 0);
-				shapes.add(shape = rect);
+				control.addShape(shape = rect);
 			}
 			rect.setRect(min(e.getX(), o.getX()), min(e.getY(), o.getY()), abs(e.getX() - o.getX()),
 					abs(e.getY() - o.getY()));
-			color.put(rect, currentColor);
+			control.addColorToShape(rect, currentColor);
 			panel.repaint();
 		}
 	}, new Tool("eli") {
@@ -122,11 +124,11 @@ class Paint extends JFrame {
 			Ellipse2D.Double eli = (Ellipse2D.Double) shape;
 			if (eli == null) {
 				eli = new Ellipse2D.Double(o.getX(), o.getY(), 0, 0);
-				shapes.add(shape = eli);
+				control.addShape(shape = eli);
 			}
 			eli.setFrame(min(e.getX(), o.getX()), min(e.getY(), o.getY()), abs(e.getX() - o.getX()),
 					abs(e.getY() - o.getY()));
-			color.put(eli, currentColor);
+			control.addColorToShape(eli, currentColor);
 			panel.repaint();
 		}
 	} };
@@ -134,74 +136,74 @@ class Paint extends JFrame {
 
 	JPanel panel;
 
-	public Paint(String title) {
+	public Vue(String title, Controleur control) {
 		super(title);
+		this.control = control;
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setMinimumSize(new Dimension(800, 600));
-//		JToolBar toolbar = new JToolBar() {
-//			{
-//				for (AbstractAction tool : tools) {
-//					add(tool);
-//				} // , new Tool("color") {
-//					// public void mouseClicked(MouseEvent e) {
-//					// String[] items = {"item1", "item2"};
-//					// JComboBox LeNomDeTaComboBox = new JComboBox(items);
-//					// currentColor = Color.RED;
-//					// }
-//				String[] items = { "black", "red", "green", "yellow", "blue" };
-//				JComboBox<String> color = new JComboBox<String>(items);
-//				color.addItemListener(new ItemListener() {
-//
-//					@Override
-//					public void itemStateChanged(ItemEvent e) {
-//						String currentColor = (String) e.getItem();
-//						switch (currentColor) {
-//						case "red":
-//							Paint.this.currentColor = Color.RED;
-//							break;
-//						case "green":
-//							Paint.this.currentColor = Color.GREEN;
-//							break;
-//						case "yellow":
-//							Paint.this.currentColor = Color.YELLOW;
-//							;
-//							break;
-//						case "blue":
-//							Paint.this.currentColor = Color.BLUE;
-//							;
-//							break;
-//						default:
-//							Paint.this.currentColor = Color.BLACK;
-//						}
-//
-//					}
-//				});
-//				add(color);
-//
-//				String currentColor = (String) color.getSelectedItem();
+		JToolBar toolbar = new JToolBar() {
+			{
+				for (AbstractAction tool : tools) {
+					add(tool);
+				} // , new Tool("color") {
+					// public void mouseClicked(MouseEvent e) {
+					// String[] items = {"item1", "item2"};
+					// JComboBox LeNomDeTaComboBox = new JComboBox(items);
+					// currentColor = Color.RED;
+					// }
+				String[] items = { "black", "red", "green", "yellow", "blue" };
+				JComboBox<String> color = new JComboBox<String>(items);
+				color.addItemListener(new ItemListener() {
+
+					@Override
+					public void itemStateChanged(ItemEvent e) {
+						String currentColor = (String) e.getItem();
+						switch (currentColor) {
+						case "red":
+							Vue.this.currentColor = Color.RED;
+							System.out.println(Vue.this.currentColor);
+							break;
+						case "green":
+							Vue.this.currentColor = Color.GREEN;
+							break;
+						case "yellow":
+							Vue.this.currentColor = Color.YELLOW;
+							break;
+						case "blue":
+							Vue.this.currentColor = Color.BLUE;
+							break;
+						default:
+							Vue.this.currentColor = Color.BLACK;
+						}
+
+					}
+				});
+				add(color);
+
+				String currentColor = (String) color.getSelectedItem();
 //				switch (currentColor) {
 //				case "red":
-//					Paint.this.currentColor = Color.RED;
+//					Vue.this.currentColor = Color.RED;
 //					break;
 //				case "green":
-//					Paint.this.currentColor = Color.GREEN;
+//					Vue.this.currentColor = Color.GREEN;
 //					break;
 //				case "yellow":
-//					Paint.this.currentColor = Color.YELLOW;
+//					Vue.this.currentColor = Color.YELLOW;
 //					;
 //					break;
 //				case "blue":
-//					Paint.this.currentColor = Color.BLUE;
+//					Vue.this.currentColor = Color.BLUE;
 //					;
 //					break;
 //				default:
-//					Paint.this.currentColor = Color.BLACK;
+//					Vue.this.currentColor = Color.BLACK;
 //				}
-//			}
-//		};
+			}
+		};
 		// toolbar.setUI(new MarkingMenu());
 
-//		add(toolbar, BorderLayout.PAGE_START);
+		add(toolbar, BorderLayout.PAGE_START);
 		panel = new JPanel() {
 			public void paintComponent(Graphics g) {
 				super.paintComponent(g);
@@ -211,7 +213,7 @@ class Paint extends JFrame {
 				g2.setColor(Color.WHITE);
 				g2.fillRect(0, 0, getWidth(), getHeight());
 
-				g2.setColor(Color.BLACK);
+//				g2.setColor(Color.BLACK);
 				for (Shape shape : shapes) {
 					g2.setColor(color.get(shape));
 					g2.draw(shape);
@@ -301,14 +303,17 @@ class Paint extends JFrame {
 		pack();
 		setVisible(true);
 	}
-
-	/* main *********************************************************************/
-
-	public static void main(String argv[]) {
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				Paint paint = new Paint("paint");
-			}
-		});
+	
+	public void updateShapes(Vector<Shape> shapes) {
+		this.shapes = shapes;
 	}
+	
+	public void updateColors(HashMap<Shape, Color> color) {
+		this.color = color;
+	}
+	
+	public void updateCurrentColor(Color c) {
+		this.currentColor = c;
+	}
+	
 }
