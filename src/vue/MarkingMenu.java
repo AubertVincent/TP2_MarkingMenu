@@ -45,7 +45,6 @@ public class MarkingMenu extends PanelUI {
 		JPanel menu = (JPanel) c;
 
 		Graphics2D g2 = (Graphics2D) g;
-
 		switch (currentState) {
 		case CHOICE:
 			drawChoices(g2);
@@ -67,18 +66,18 @@ public class MarkingMenu extends PanelUI {
 		int i = 0;
 		for (Color c : Colors) {
 
-			double midAngle = 90 + (360 / Colors.size()) * i + (360 / Colors.size()) / 2;
+//			double midAngle = 90 + (360 / Colors.size()) * i + (360 / Colors.size()) / 2;
 
 			if (activate == i)
-				g.setColor(Color.BLUE);
+				g.setColor(c.darker());
 			else
-				g.setColor(Color.CYAN);
+				g.setColor(c);
 			g.fill(arcsColors.get(i));
 
 			g.setColor(Color.BLACK);
 			g.draw(arcsColors.get(i));
 
-			g.setColor(Color.WHITE);
+//			g.setColor(Color.WHITE);
 
 			i++;
 

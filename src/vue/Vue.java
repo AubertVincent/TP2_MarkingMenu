@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.ActionEvent;
@@ -208,6 +209,7 @@ public class Vue extends JFrame {
 					panel.add(menu);
 					menu.setBounds(p.x - menu.getWidth() / 2, p.y - menu.getHeight() / 2, 200, 200);
 				} else {
+					System.out.println("CLOSING MENU");
 					panel.remove(menu);
 					panel.repaint();
 					menu = null;
@@ -256,11 +258,11 @@ public class Vue extends JFrame {
 				public void mouseClicked(MouseEvent e) {
 					if (markmenu.getCurrentState() == StateMenu.COLORS) {
 						if (markmenu.getArcsColors().get(j).contains(e.getPoint())) {
-							System.out.println("using color " + colors[j]);
-							markmenu.setCurrentState(StateMenu.CHOICE);
-							menu.setVisible(false);
-						} else {
-							menu.setVisible(false);
+							control.changeCurrentColor(colors[j]);
+							System.out.println("CLOSING MENU");
+							panel.remove(menu);
+							panel.repaint();
+							resetMenu();
 						}
 					}
 
@@ -296,9 +298,10 @@ public class Vue extends JFrame {
 							panel.addMouseListener(tool);
 							panel.addMouseMotionListener(tool);
 							markmenu.setCurrentState(StateMenu.CHOICE);
-							menu.setVisible(false);
-						} else {
-							menu.setVisible(false);
+							System.out.println("CLOSING MENU");
+							panel.remove(menu);
+							panel.repaint();
+							resetMenu();
 						}
 					}
 
@@ -326,10 +329,11 @@ public class Vue extends JFrame {
 				if (markmenu.getCurrentState() == StateMenu.CHOICE) {
 					if (markmenu.getArcsChoices().get(0).contains(e.getPoint())) {
 						markmenu.setCurrentState(StateMenu.TOOLS);
+						Rectangle bound=menu.getBounds();
+						bound.translate(e.getX()- menu.getWidth() / 2, e.getY()- menu.getHeight() / 2);
+						menu.setBounds(bound);
 						menu.repaint();
 
-					} else {
-						menu.setVisible(false);
 					}
 				}
 
@@ -356,9 +360,10 @@ public class Vue extends JFrame {
 				if (markmenu.getCurrentState() == StateMenu.CHOICE) {
 					if (markmenu.getArcsChoices().get(1).contains(e.getPoint())) {
 						markmenu.setCurrentState(StateMenu.COLORS);
+						Rectangle bound=menu.getBounds();
+						bound.translate(e.getX()- menu.getWidth() / 2, e.getY()- menu.getHeight() / 2);
+						menu.setBounds(bound);
 						menu.repaint();
-					} else {
-						menu.setVisible(false);
 					}
 				}
 
@@ -382,6 +387,10 @@ public class Vue extends JFrame {
 
 	public void updateCurrentColor(Color c) {
 		this.currentColor = c;
+	}
+	
+	public void resetMenu() {
+		menu=null;
 	}
 
 }
