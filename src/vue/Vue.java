@@ -38,7 +38,7 @@ public class Vue extends JFrame {
 
 	public Color currentColor;
 	Controleur control;
-	JPanel menu;
+	MarkingMenu menu;
 
 	class Tool extends AbstractAction implements MouseInputListener {
 		Point o;
@@ -226,8 +226,8 @@ public class Vue extends JFrame {
 		setVisible(true);
 	}
 
-	public JPanel createMenu() {
-		JPanel menu = new JPanel() {
+	public MarkingMenu createMenu() {
+		MarkingMenu menu = new MarkingMenu(200,200) {
 			{
 				setOpaque(false);
 			}
@@ -236,28 +236,28 @@ public class Vue extends JFrame {
 
 		panel.setLayout(null);
 
-		MarkingMenu markmenu = new MarkingMenu(menu.getWidth(), menu.getHeight());
+//		MarkingMenu markmenu = new MarkingMenu(menu.getWidth(), menu.getHeight());
 
-		menu.setUI(markmenu);
+//		menu.setUI(markmenu);
 
 		for (int i = 0; i < colors.length; i++) {
 			final int j = i;
-			markmenu.addColor(colors[j]);
+			menu.addColor(colors[j]);
 
 			MouseInputAdapter menulistener = new MouseInputAdapter() {
 				@Override
 				public void mouseMoved(MouseEvent e) {
-					if (markmenu.getCurrentState() == StateMenu.COLORS
-							&& markmenu.getArcsColors().get(j).contains(e.getPoint())) {
-						markmenu.setActivate(j);
+					if (menu.getCurrentState() == StateMenu.COLORS
+							&& menu.getArcsColors().get(j).contains(e.getPoint())) {
+						menu.setActivate(j);
 						menu.repaint();
 					}
 				}
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					if (markmenu.getCurrentState() == StateMenu.COLORS) {
-						if (markmenu.getArcsColors().get(j).contains(e.getPoint())) {
+					if (menu.getCurrentState() == StateMenu.COLORS) {
+						if (menu.getArcsColors().get(j).contains(e.getPoint())) {
 							control.changeCurrentColor(colors[j]);
 							System.out.println("CLOSING MENU");
 							panel.remove(menu);
@@ -275,29 +275,29 @@ public class Vue extends JFrame {
 		// MOUSE LISTENER OUTILS
 		for (int i = 0; i < tools.length; i++) {
 			final int j = i;
-			markmenu.addToolLabel(tools[j].getName());
+			menu.addToolLabel(tools[j].getName());
 
 			MouseInputAdapter menulistener = new MouseInputAdapter() {
 				@Override
 				public void mouseMoved(MouseEvent e) {
-					if (markmenu.getCurrentState() == StateMenu.TOOLS
-							&& markmenu.getArcsTools().get(j).contains(e.getPoint())) {
-						markmenu.setActivate(j);
+					if (menu.getCurrentState() == StateMenu.TOOLS
+							&& menu.getArcsTools().get(j).contains(e.getPoint())) {
+						menu.setActivate(j);
 						menu.repaint();
 					}
 				}
 
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					if (markmenu.getCurrentState() == StateMenu.TOOLS) {
-						if (markmenu.getArcsTools().get(j).contains(e.getPoint())) {
+					if (menu.getCurrentState() == StateMenu.TOOLS) {
+						if (menu.getArcsTools().get(j).contains(e.getPoint())) {
 							System.out.println("using tool " + tools[j]);
 							panel.removeMouseListener(tool);
 							panel.removeMouseMotionListener(tool);
 							tool = tools[j];
 							panel.addMouseListener(tool);
 							panel.addMouseMotionListener(tool);
-							markmenu.setCurrentState(StateMenu.CHOICE);
+							menu.setCurrentState(StateMenu.CHOICE);
 							System.out.println("CLOSING MENU");
 							panel.remove(menu);
 							panel.repaint();
@@ -312,23 +312,23 @@ public class Vue extends JFrame {
 		}
 		
 		//MOUSE LISTENER CHOICES
-		markmenu.addChoiceLabel("Outils");
+		menu.addChoiceLabel("Outils");
 
 		MouseInputAdapter menulistener = new MouseInputAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				if (markmenu.getCurrentState() == StateMenu.CHOICE
-						&& markmenu.getArcsChoices().get(0).contains(e.getPoint())) {
-					markmenu.setActivate(0);
+				if (menu.getCurrentState() == StateMenu.CHOICE
+						&& menu.getArcsChoices().get(0).contains(e.getPoint())) {
+					menu.setActivate(0);
 					menu.repaint();
 				}
 			}
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (markmenu.getCurrentState() == StateMenu.CHOICE) {
-					if (markmenu.getArcsChoices().get(0).contains(e.getPoint())) {
-						markmenu.setCurrentState(StateMenu.TOOLS);
+				if (menu.getCurrentState() == StateMenu.CHOICE) {
+					if (menu.getArcsChoices().get(0).contains(e.getPoint())) {
+						menu.setCurrentState(StateMenu.TOOLS);
 						Rectangle bound=menu.getBounds();
 						bound.translate(e.getX()- menu.getWidth() / 2, e.getY()- menu.getHeight() / 2);
 						menu.setBounds(bound);
@@ -343,23 +343,23 @@ public class Vue extends JFrame {
 		menu.addMouseMotionListener(menulistener);
 		menu.addMouseListener(menulistener);
 
-		markmenu.addChoiceLabel("Couleurs");
+		menu.addChoiceLabel("Couleurs");
 
 		menulistener = new MouseInputAdapter() {
 			@Override
 			public void mouseMoved(MouseEvent e) {
-				if (markmenu.getCurrentState() == StateMenu.CHOICE
-						&& markmenu.getArcsChoices().get(1).contains(e.getPoint())) {
-					markmenu.setActivate(1);
+				if (menu.getCurrentState() == StateMenu.CHOICE
+						&& menu.getArcsChoices().get(1).contains(e.getPoint())) {
+					menu.setActivate(1);
 					menu.repaint();
 				}
 			}
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (markmenu.getCurrentState() == StateMenu.CHOICE) {
-					if (markmenu.getArcsChoices().get(1).contains(e.getPoint())) {
-						markmenu.setCurrentState(StateMenu.COLORS);
+				if (menu.getCurrentState() == StateMenu.CHOICE) {
+					if (menu.getArcsChoices().get(1).contains(e.getPoint())) {
+						menu.setCurrentState(StateMenu.COLORS);
 						Rectangle bound=menu.getBounds();
 						bound.translate(e.getX()- menu.getWidth() / 2, e.getY()- menu.getHeight() / 2);
 						menu.setBounds(bound);

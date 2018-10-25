@@ -11,7 +11,7 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.plaf.PanelUI;
 
-public class MarkingMenu extends PanelUI {
+public class MarkingMenu extends JPanel {
 
 	private ArrayList<Arc2D> arcsTools = new ArrayList<Arc2D>();
 	private ArrayList<Arc2D> arcsChoices = new ArrayList<Arc2D>();
@@ -28,6 +28,7 @@ public class MarkingMenu extends PanelUI {
 		super();
 		this.width = 0;
 		this.height = 0;
+		currentState = StateMenu.CHOICE;
 	}
 
 	public MarkingMenu(int width, int height) {
@@ -36,13 +37,11 @@ public class MarkingMenu extends PanelUI {
 		this.height = height;
 		currentState = StateMenu.CHOICE;
 	}
-
+	
 	@Override
-	public void paint(Graphics g, JComponent c) {
+	public void paint(Graphics g) {
 		// TODO Auto-generated method stub
-		// super.paint(g, c);
-
-		JPanel menu = (JPanel) c;
+		super.paint(g);
 
 		Graphics2D g2 = (Graphics2D) g;
 		switch (currentState) {
@@ -58,8 +57,6 @@ public class MarkingMenu extends PanelUI {
 		default:
 			break;
 		}
-
-		// TODO set the menu for the item 9 and 10
 	}
 
 	public void drawColors(Graphics2D g) {
