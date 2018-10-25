@@ -39,11 +39,13 @@ public class Vue extends JFrame {
 	public Color currentColor;
 	Controleur control;
 	MarkingMenu menu;
+	JPanel panel;
 
 	class Tool extends AbstractAction implements MouseInputListener {
 		Point o;
 		Shape shape;
 		private String name;
+		int button;
 
 		public Tool(String name) {
 			super(name);
@@ -74,6 +76,7 @@ public class Vue extends JFrame {
 
 		public void mousePressed(MouseEvent e) {
 			o = e.getPoint();
+			button=e.getButton();
 		}
 
 		public void mouseReleased(MouseEvent e) {
@@ -91,19 +94,23 @@ public class Vue extends JFrame {
 
 	Tool tools[] = { new Tool("pen") {
 		public void mouseDragged(MouseEvent e) {
-			Path2D.Double path = (Path2D.Double) shape;
-			if (path == null) {
-				path = new Path2D.Double();
-				path.moveTo(o.getX(), o.getY());
-				control.addShape(shape = path);
+			if(button==MouseEvent.BUTTON1) {
+				Path2D.Double path = (Path2D.Double) shape;
+				if (path == null) {
+					path = new Path2D.Double();
+					path.moveTo(o.getX(), o.getY());
+					control.addShape(shape = path);
+				}
+				path.lineTo(e.getX(), e.getY());
+				control.addColorToShape(path, currentColor);
+				panel.repaint();
 			}
-			path.lineTo(e.getX(), e.getY());
-			control.addColorToShape(path, currentColor);
-			panel.repaint();
+			
 		}
 	}, new Tool("rect") {
 		public void mouseDragged(MouseEvent e) {
-			Rectangle2D.Double rect = (Rectangle2D.Double) shape;
+			if(button==MouseEvent.BUTTON1) {
+				Rectangle2D.Double rect = (Rectangle2D.Double) shape;
 			if (rect == null) {
 				rect = new Rectangle2D.Double(o.getX(), o.getY(), 0, 0);
 				control.addShape(shape = rect);
@@ -112,10 +119,13 @@ public class Vue extends JFrame {
 					abs(e.getY() - o.getY()));
 			control.addColorToShape(rect, currentColor);
 			panel.repaint();
+			}
+			
 		}
 	}, new Tool("eli") {
 		public void mouseDragged(MouseEvent e) {
-			Ellipse2D.Double eli = (Ellipse2D.Double) shape;
+			if(button==MouseEvent.BUTTON1) {
+				Ellipse2D.Double eli = (Ellipse2D.Double) shape;
 			if (eli == null) {
 				eli = new Ellipse2D.Double(o.getX(), o.getY(), 0, 0);
 				control.addShape(shape = eli);
@@ -124,11 +134,12 @@ public class Vue extends JFrame {
 					abs(e.getY() - o.getY()));
 			control.addColorToShape(eli, currentColor);
 			panel.repaint();
+			}
+			
 		}
 	} };
 	Tool tool;
 
-	JPanel panel;
 
 	public Vue(String title, Controleur control) {
 		super(title);
@@ -192,40 +203,113 @@ public class Vue extends JFrame {
 		// menu.setVisible(false);
 
 		MouseInputAdapter listener = new MouseInputAdapter() {
-
+			Point origin;
+			int button;
+//			@Override
+//			public void mouseClicked(MouseEvent e) {
+//				Point p = e.getPoint();
+//				// if (menu.isVisible()) {
+//				//
+//				// menu.setVisible(false);
+//				// } else {
+//				// menu.setLocation(p.x-menu.getWidth()/2,p.y-menu.getHeight()/2);
+//				// menu.setVisible(true);
+//				// menu.repaint();
+//				// }
+//				if (menu == null) {
+//					menu = createMenu();
+//					panel.add(menu);
+//					menu.setBounds(p.x - menu.getWidth() / 2, p.y - menu.getHeight() / 2, 200, 200);
+//				} else {
+//					System.out.println("CLOSING MENU");
+//					panel.remove(menu);
+//					panel.repaint();
+//					menu = null;
+//				}
+//
+//			}
+			
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				Point p = e.getPoint();
-				// if (menu.isVisible()) {
-				//
-				// menu.setVisible(false);
-				// } else {
-				// menu.setLocation(p.x-menu.getWidth()/2,p.y-menu.getHeight()/2);
-				// menu.setVisible(true);
-				// menu.repaint();
-				// }
-				if (menu == null) {
-					menu = createMenu();
-					panel.add(menu);
-					menu.setBounds(p.x - menu.getWidth() / 2, p.y - menu.getHeight() / 2, 200, 200);
-				} else {
-					System.out.println("CLOSING MENU");
-					panel.remove(menu);
-					panel.repaint();
-					menu = null;
+			public void mousePressed(MouseEvent e) {
+				origin = e.getPoint();
+				button=e.getButton();
+			}
+			
+			@Override
+			public void mouseDragged(MouseEvent e) {
+				if(button==MouseEvent.BUTTON3) {
+					if (menu == null) {
+						menu = createMenu();
+						panel.add(menu);
+						menu.setBounds(origin.x - menu.getWidth() / 2, origin.y - menu.getHeight() / 2, 200, 200);
+						
+					}else if(isOutOfMenu(e.getPoint())) {
+						switch(menu.getCurrentState()) {
+						case CHOICE:
+							if(menu.getActivate()==0) {
+								menu.setCurrentState(StateMenu.TOOLS);
+								menu.setBounds(e.getX()- menu.getWidth() / 2,e.getY()- menu.getHeight() / 2,200,200);
+								menu.repaint();
+							}else {
+								menu.setCurrentState(StateMenu.COLORS);
+								menu.setBounds(e.getX()- menu.getWidth() / 2,e.getY()- menu.getHeight() / 2,200,200);
+								menu.repaint();
+							}
+							break;
+						default:
+							break;
+						}
+					}
 				}
-
+			}
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				
+				if (menu != null) {
+					switch(menu.getCurrentState()) {
+					case TOOLS:
+						panel.removeMouseListener(tool);
+						panel.removeMouseMotionListener(tool);
+						tool = tools[menu.getActivate()];
+						panel.addMouseListener(tool);
+						panel.addMouseMotionListener(tool);
+						menu.setCurrentState(StateMenu.CHOICE);
+						System.out.println("CLOSING MENU");
+						panel.remove(menu);
+						panel.repaint();
+						resetMenu();
+						break;
+					case COLORS:
+						control.changeCurrentColor(colors[menu.getActivate()]);
+					default:
+						System.out.println("CLOSING MENU");
+						panel.remove(menu);
+						panel.repaint();
+						resetMenu();
+						break;
+					}
+					
+					
+				}
 			}
 
 		};
 
 		panel.addMouseListener(listener);
+		panel.addMouseMotionListener(listener);
 		add(panel);
 
 		pack();
 		setVisible(true);
 	}
+	
 
+	public boolean isOutOfMenu(Point p) {
+		
+		return (p.x<menu.getX() || p.x>menu.getX()+menu.getWidth() || p.y <menu.getY() ||p.y>menu.getY()+menu.getHeight() );
+	}
+	
 	public MarkingMenu createMenu() {
 		MarkingMenu menu = new MarkingMenu(200,200) {
 			{
@@ -236,40 +320,22 @@ public class Vue extends JFrame {
 
 		panel.setLayout(null);
 
-//		MarkingMenu markmenu = new MarkingMenu(menu.getWidth(), menu.getHeight());
-
-//		menu.setUI(markmenu);
-
 		for (int i = 0; i < colors.length; i++) {
 			final int j = i;
 			menu.addColor(colors[j]);
 
 			MouseInputAdapter menulistener = new MouseInputAdapter() {
 				@Override
-				public void mouseMoved(MouseEvent e) {
+				public void mouseDragged(MouseEvent e) {
 					if (menu.getCurrentState() == StateMenu.COLORS
-							&& menu.getArcsColors().get(j).contains(e.getPoint())) {
+							&& menu.getArcsColors().get(j).contains(new Point(e.getPoint().x-menu.getX(),e.getPoint().y-menu.getY()))) {
 						menu.setActivate(j);
 						menu.repaint();
 					}
 				}
-
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (menu.getCurrentState() == StateMenu.COLORS) {
-						if (menu.getArcsColors().get(j).contains(e.getPoint())) {
-							control.changeCurrentColor(colors[j]);
-							System.out.println("CLOSING MENU");
-							panel.remove(menu);
-							panel.repaint();
-							resetMenu();
-						}
-					}
-
-				}
 			};
-			menu.addMouseMotionListener(menulistener);
-			menu.addMouseListener(menulistener);
+			panel.addMouseMotionListener(menulistener);
+			panel.addMouseListener(menulistener);
 		}
 
 		// MOUSE LISTENER OUTILS
@@ -279,99 +345,52 @@ public class Vue extends JFrame {
 
 			MouseInputAdapter menulistener = new MouseInputAdapter() {
 				@Override
-				public void mouseMoved(MouseEvent e) {
+				public void mouseDragged(MouseEvent e) {
 					if (menu.getCurrentState() == StateMenu.TOOLS
-							&& menu.getArcsTools().get(j).contains(e.getPoint())) {
+							&& menu.getArcsTools().get(j).contains(new Point(e.getPoint().x-menu.getX(),e.getPoint().y-menu.getY()))) {
 						menu.setActivate(j);
 						menu.repaint();
 					}
 				}
-
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (menu.getCurrentState() == StateMenu.TOOLS) {
-						if (menu.getArcsTools().get(j).contains(e.getPoint())) {
-							System.out.println("using tool " + tools[j]);
-							panel.removeMouseListener(tool);
-							panel.removeMouseMotionListener(tool);
-							tool = tools[j];
-							panel.addMouseListener(tool);
-							panel.addMouseMotionListener(tool);
-							menu.setCurrentState(StateMenu.CHOICE);
-							System.out.println("CLOSING MENU");
-							panel.remove(menu);
-							panel.repaint();
-							resetMenu();
-						}
-					}
-
-				}
 			};
-			menu.addMouseMotionListener(menulistener);
-			menu.addMouseListener(menulistener);
+			panel.addMouseMotionListener(menulistener);
+			panel.addMouseListener(menulistener);
 		}
 		
 		//MOUSE LISTENER CHOICES
 		menu.addChoiceLabel("Outils");
 
 		MouseInputAdapter menulistener = new MouseInputAdapter() {
+			
 			@Override
-			public void mouseMoved(MouseEvent e) {
+			public void mouseDragged(MouseEvent e) {
 				if (menu.getCurrentState() == StateMenu.CHOICE
-						&& menu.getArcsChoices().get(0).contains(e.getPoint())) {
+						&& menu.getArcsChoices().get(0).contains(new Point(e.getPoint().x-menu.getX(),e.getPoint().y-menu.getY()))) {
 					menu.setActivate(0);
 					menu.repaint();
 				}
 			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (menu.getCurrentState() == StateMenu.CHOICE) {
-					if (menu.getArcsChoices().get(0).contains(e.getPoint())) {
-						menu.setCurrentState(StateMenu.TOOLS);
-						Rectangle bound=menu.getBounds();
-						bound.translate(e.getX()- menu.getWidth() / 2, e.getY()- menu.getHeight() / 2);
-						menu.setBounds(bound);
-						menu.repaint();
-
-					}
-				}
-
-			}
 		};
 
-		menu.addMouseMotionListener(menulistener);
-		menu.addMouseListener(menulistener);
+		panel.addMouseMotionListener(menulistener);
+		panel.addMouseListener(menulistener);
 
 		menu.addChoiceLabel("Couleurs");
 
 		menulistener = new MouseInputAdapter() {
+			
 			@Override
-			public void mouseMoved(MouseEvent e) {
+			public void mouseDragged(MouseEvent e) {
 				if (menu.getCurrentState() == StateMenu.CHOICE
-						&& menu.getArcsChoices().get(1).contains(e.getPoint())) {
+						&& menu.getArcsChoices().get(1).contains(new Point(e.getPoint().x-menu.getX(),e.getPoint().y-menu.getY()))) {
 					menu.setActivate(1);
 					menu.repaint();
 				}
 			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (menu.getCurrentState() == StateMenu.CHOICE) {
-					if (menu.getArcsChoices().get(1).contains(e.getPoint())) {
-						menu.setCurrentState(StateMenu.COLORS);
-						Rectangle bound=menu.getBounds();
-						bound.translate(e.getX()- menu.getWidth() / 2, e.getY()- menu.getHeight() / 2);
-						menu.setBounds(bound);
-						menu.repaint();
-					}
-				}
-
-			}
 		};
 
-		menu.addMouseMotionListener(menulistener);
-		menu.addMouseListener(menulistener);
+		panel.addMouseMotionListener(menulistener);
+		panel.addMouseListener(menulistener);
 
 		return menu;
 

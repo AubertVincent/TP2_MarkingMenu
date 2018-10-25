@@ -200,5 +200,9 @@ public class MarkingMenu extends JPanel {
 		this.currentState = state;
 		System.out.println(currentState);
 	}
+	
+	public int getActivate() {
+		return activate;
+	}
 
 }
